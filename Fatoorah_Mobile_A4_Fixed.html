@@ -1,0 +1,3190 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>الفاتورة - مركز الإخلاص</title>
+
+
+<!-- =========================================================
+     PDF LIBRARIES
+     ========================================================= -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+<!-- =========================================================
+     ALMARAI FONT
+     ========================================================= -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;500;600;700;800&display=swap"
+  rel="stylesheet"
+>
+
+
+<style>
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+:root{
+  --blue:#3198ea;
+  --light-blue:#eef8ff;
+  --text:#222;
+  --muted:#687180;
+  --line:#e2e7ec;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  background:#f3f5f7;
+  color:var(--text);
+  font-family:"Almarai","Arial",sans-serif;
+}
+
+body{
+  direction:rtl;
+}
+
+.app{
+  width:100%;
+  padding:28px;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.controls{
+  max-width:1190px;
+  margin:0 auto 24px;
+  background:#fff;
+  border-radius:16px;
+  padding:22px;
+  box-shadow:0 8px 30px rgba(0,0,0,.07);
+}
+
+.controls h1{
+  margin:0 0 18px;
+  font-size:24px;
+}
+
+.controls-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  font-size:13px;
+  font-weight:700;
+  color:#444;
+}
+
+input[type="date"]{
+  direction:ltr;
+  text-align:left;
+}
+
+.phone-ltr{
+  direction:ltr;
+  text-align:right !important;
+  unicode-bidi:plaintext;
+}
+
+#customerPhone{
+  direction:ltr;
+  text-align:right !important;
+  unicode-bidi:plaintext;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+
+input[type="number"]{
+  -moz-appearance:textfield;
+}
+
+input,
+textarea{
+  width:100%;
+  border:1px solid #d9dfe5;
+  border-radius:9px;
+  padding:11px 12px;
+  font:inherit;
+  color:#222;
+  background:#fff;
+  outline:none;
+}
+
+input:focus,
+textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(49,152,234,.10);
+}
+
+textarea{
+  min-height:82px;
+  resize:vertical;
+}
+
+
+/* =========================================================
+   PRODUCTS EDITOR
+   ========================================================= */
+
+.products-editor{
+  margin-top:20px;
+  border-top:1px solid #eee;
+  padding-top:18px;
+}
+
+.products-editor-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.products-editor h2{
+  margin:0;
+  font-size:16px;
+}
+
+.product-row{
+  display:grid;
+  grid-template-columns:2.2fr .8fr 1fr 1fr auto;
+  gap:8px;
+  margin-bottom:8px;
+  align-items:center;
+}
+
+.product-row .remove{
+  border:0;
+  background:#e74c3c;
+  color:#fff;
+  border-radius:8px;
+  padding:10px 12px;
+  cursor:pointer;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:11px 18px;
+  cursor:pointer;
+  font:inherit;
+  font-weight:700;
+}
+
+.btn-add{
+  background:var(--blue);
+  color:#fff;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+  flex-wrap:wrap;
+}
+
+.btn-update{
+  background:#222;
+  color:#fff;
+}
+
+.btn-pdf{
+  background:var(--blue);
+  color:#fff;
+}
+
+.btn-pdf:disabled{
+  opacity:.65;
+  cursor:wait;
+}
+
+
+/* =========================================================
+   SCREEN INVOICE
+   ========================================================= */
+
+.invoice-wrap{
+  max-width:1190px;
+  margin:0 auto;
+}
+
+.invoice{
+  width:1190px;
+  min-height:1684px;
+  max-width:100%;
+  margin:0 auto;
+  background:#fff;
+  padding:72px 65px 50px;
+  position:relative;
+  box-shadow:0 8px 30px rgba(0,0,0,.10);
+  overflow:hidden;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.invoice-header{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  align-items:start;
+  margin-bottom:75px;
+  direction:ltr;
+}
+
+.brand{
+  text-align:left;
+  direction:rtl;
+}
+
+.brand-name{
+  color:#2389df;
+  font-size:50px;
+  line-height:1;
+  font-weight:500;
+  letter-spacing:-2px;
+  margin:0;
+}
+
+.brand-subtitle{
+  margin:8px 0 0;
+  font-size:21px;
+  font-weight:500;
+  white-space:nowrap;
+}
+
+.brand-address{
+  margin-top:45px;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.65;
+}
+
+.invoice-heading{
+  text-align:right;
+  direction:rtl;
+}
+
+.invoice-heading h1{
+  margin:0;
+  font-size:42px;
+  font-weight:500;
+  line-height:1.1;
+}
+
+.bill-to{
+  margin-top:70px;
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.6;
+}
+
+.bill-to .label{
+  margin-bottom:2px;
+}
+
+.bill-to .customer-name{
+  color:#222;
+  font-size:19px;
+  font-weight:700;
+}
+
+.bill-to .customer-line{
+  color:var(--muted);
+}
+
+
+/* =========================================================
+   META
+   ========================================================= */
+
+.meta-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:stretch;
+  direction:ltr;
+}
+
+.meta-box{
+  min-height:100px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:18px 30px;
+  direction:rtl;
+}
+
+.meta-box.date{
+  background:var(--light-blue);
+}
+
+.meta-box.date.first{
+  border-radius:0 42px 0 0;
+}
+
+.meta-box.date.last{
+  border-radius:42px 0 0 0;
+}
+
+.meta-box.invoice-no{
+  background:#fff;
+}
+
+.meta-label{
+  color:var(--muted);
+  font-size:17px;
+  margin-bottom:6px;
+}
+
+.meta-value{
+  font-size:18px;
+  font-weight:700;
+}
+
+.meta-box.invoice-no .meta-value{
+  text-align:right;
+}
+
+
+/* =========================================================
+   PRODUCTS AREA
+   ========================================================= */
+
+.items-shell{
+
+  display:grid;
+
+  /*
+    العمود الأيسر:
+    كمية + سعر + مبلغ
+
+    العمود الأيمن:
+    وصف
+  */
+
+  grid-template-columns:1fr 2fr;
+
+  background:var(--light-blue);
+
+  border-radius:38px 0 0 38px;
+
+  overflow:hidden;
+
+  direction:ltr;
+
+  /*
+    مهم جداً:
+    لا نضع ارتفاع ثابت هنا
+    حتى يكبر الصف حسب الوصف
+  */
+
+  align-items:stretch;
+}
+
+
+/* =========================================================
+   LEFT NUMBERS AREA
+   ========================================================= */
+
+.items-left{
+
+  grid-column:1;
+  grid-row:1;
+
+  padding:0 20px 28px;
+
+  direction:rtl;
+
+  display:flex;
+
+  align-items:stretch;
+}
+
+
+/* =========================================================
+   DESCRIPTION AREA
+   ========================================================= */
+
+.items-right{
+
+  grid-column:2;
+  grid-row:1;
+
+  background:#fff;
+
+  padding:0 0 28px;
+
+  direction:rtl;
+
+  display:flex;
+
+  align-items:stretch;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.items-table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  table-layout:fixed;
+
+}
+
+
+/*
+  مهم:
+  الخلايا لا تأخذ height ثابت.
+  الصف كله يتمدد حسب أطول خلية.
+*/
+
+.items-table tr{
+
+  height:auto;
+
+}
+
+
+/* =========================================================
+   GENERAL CELLS
+   ========================================================= */
+
+.items-table th,
+.items-table td{
+
+  height:auto;
+
+  min-height:62px;
+
+  border-bottom:1px solid var(--line);
+
+  vertical-align:middle;
+
+}
+
+
+/* =========================================================
+   DESCRIPTION HEADER
+   ========================================================= */
+
+.items-right .items-table th{
+
+  height:62px;
+
+  color:var(--muted);
+
+  font-size:17px;
+
+  font-weight:500;
+
+  text-align:right;
+
+  padding-right:25px;
+
+  white-space:nowrap;
+}
+
+
+/* =========================================================
+   DESCRIPTION CELLS
+   ========================================================= */
+
+.items-right .items-table td{
+
+  color:#222;
+
+  font-size:17px;
+
+  line-height:1.55;
+
+  text-align:right;
+
+  vertical-align:middle;
+
+  /*
+    النص يلتف داخل الخانة
+  */
+
+  white-space:normal;
+
+  overflow-wrap:anywhere;
+
+  word-break:break-word;
+
+  padding-top:10px;
+
+  padding-bottom:10px;
+
+  padding-right:25px;
+
+  padding-left:20px;
+
+}
+
+
+/* =========================================================
+   LEFT TABLE HEADER
+   ========================================================= */
+
+.left-table th{
+
+  height:62px;
+
+  color:var(--muted);
+
+  font-size:17px;
+
+  font-weight:500;
+
+  text-align:center;
+
+  vertical-align:middle;
+
+  white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   LEFT TABLE DATA
+
+   ترتيب RTL:
+
+   الكمية | السعر | المبلغ
+   ========================================================= */
+
+.left-table td{
+
+  color:#222;
+
+  font-size:17px;
+
+  text-align:center;
+
+  vertical-align:middle;
+
+  height:auto;
+
+  min-height:62px;
+
+  white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   QUANTITY COLUMN
+   ========================================================= */
+
+.left-table th:nth-child(1),
+.left-table td:nth-child(1){
+
+  width:20%;
+
+  padding-left:22px;
+
+  padding-right:22px;
+
+}
+
+
+/* =========================================================
+   PRICE COLUMN
+   ========================================================= */
+
+.left-table th:nth-child(2),
+.left-table td:nth-child(2){
+
+  width:40%;
+
+  padding-left:40px;
+
+  padding-right:40px;
+
+}
+
+
+/* =========================================================
+   AMOUNT COLUMN
+   ========================================================= */
+
+.left-table th:nth-child(3),
+.left-table td:nth-child(3){
+
+  width:40%;
+
+  padding-left:40px;
+
+  padding-right:40px;
+
+}
+
+
+/*
+  مسافة إضافية بين الأعمدة
+*/
+
+.left-table th + th,
+.left-table td + td{
+
+  padding-left:40px;
+
+}
+
+
+/* =========================================================
+   CURRENCY
+   ========================================================= */
+
+.currency{
+
+  white-space:nowrap !important;
+
+  direction:ltr;
+
+  unicode-bidi:plaintext;
+
+  text-align:center !important;
+
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.total-bar{
+
+  width:50%;
+
+  min-height:78px;
+
+  background:var(--blue);
+
+  color:#fff;
+
+  border-radius:0 0 38px 38px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding:0 30px;
+
+  font-size:20px;
+
+  font-weight:700;
+
+  /*
+    إلى اليسار
+  */
+
+  margin-right:auto;
+
+  margin-left:0;
+
+}
+
+.total-bar .amount{
+
+  direction:ltr;
+
+  white-space:nowrap;
+
+  text-align:left;
+
+}
+
+
+/* =========================================================
+   BOTTOM
+   ========================================================= */
+
+.bottom-area{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:40px;
+
+  align-items:end;
+
+  margin-top:390px;
+
+  direction:ltr;
+}
+
+.payment-box{
+
+  background:var(--light-blue);
+
+  border-radius:28px 0 0 28px;
+
+  overflow:hidden;
+
+  direction:rtl;
+}
+
+.payment-content{
+
+  padding:22px 30px 18px;
+
+  min-height:145px;
+}
+
+.payment-content h3{
+
+  margin:0 0 8px;
+
+  font-size:17px;
+}
+
+.payment-content p{
+
+  margin:5px 0;
+
+  color:var(--muted);
+
+  font-size:16px;
+
+  line-height:1.5;
+}
+
+.payment-phone{
+
+  border-top:1px solid rgba(49,152,234,.12);
+
+  padding:14px 30px;
+
+  color:var(--muted);
+
+  font-size:16px;
+
+  text-align:center;
+
+  background:rgba(49,152,234,.035);
+}
+
+.thank-you{
+
+  align-self:end;
+
+  text-align:right;
+
+  font-size:17px;
+
+  font-weight:700;
+
+  padding-bottom:18px;
+
+  direction:rtl;
+}
+
+
+/* =========================================================
+   PDF EXPORT
+   The visible .invoice is the single source of truth.
+   ========================================================= */
+
+/* =========================================================
+   HIDDEN PDF AREA
+   ========================================================= */
+
+#pdfArea{
+
+  position:fixed;
+
+  left:-10000px;
+
+  top:0;
+
+  width:210mm;
+
+  height:297mm;
+
+  background:#fff;
+
+  overflow:hidden;
+
+  z-index:-1;
+}
+
+
+#pdfInvoice{
+
+  width:210mm;
+
+  height:297mm;
+
+  background:#fff;
+
+  padding:15mm 11.5mm 12mm;
+
+  position:relative;
+
+  overflow:hidden;
+
+  font-family:"Almarai","Arial",sans-serif;
+}
+
+
+/* =========================================================
+   PDF HEADER
+   ========================================================= */
+
+#pdfInvoice .invoice-header{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10mm;
+
+  margin-bottom:18mm;
+
+  direction:ltr;
+}
+
+#pdfInvoice .brand-name{
+
+  font-size:34px;
+}
+
+#pdfInvoice .brand-subtitle{
+
+  font-size:14px;
+
+  margin-top:5px;
+}
+
+#pdfInvoice .brand-address{
+
+  margin-top:18mm;
+
+  font-size:12px;
+
+  line-height:1.6;
+}
+
+#pdfInvoice .invoice-heading h1{
+
+  font-size:31px;
+}
+
+#pdfInvoice .bill-to{
+
+  margin-top:17mm;
+
+  font-size:11px;
+
+  line-height:1.6;
+}
+
+#pdfInvoice .bill-to .customer-name{
+
+  font-size:13px;
+}
+
+
+/* =========================================================
+   PDF META
+   ========================================================= */
+
+#pdfInvoice .meta-box{
+
+  min-height:20mm;
+
+  padding:4mm 6mm;
+}
+
+#pdfInvoice .meta-label{
+
+  font-size:11px;
+
+  margin-bottom:2px;
+}
+
+#pdfInvoice .meta-value{
+
+  font-size:12px;
+}
+
+
+/* =========================================================
+   PDF PRODUCTS
+   ========================================================= */
+
+#pdfInvoice .items-shell{
+
+  min-height:0;
+
+  height:auto;
+
+  align-items:stretch;
+
+  border-radius:10mm 0 0 10mm;
+}
+
+
+#pdfInvoice .items-left{
+
+  padding:0 4mm 5mm;
+
+  display:flex;
+
+  align-items:stretch;
+}
+
+
+#pdfInvoice .items-right{
+
+  padding:0 0 5mm;
+
+  display:flex;
+
+  align-items:stretch;
+}
+
+
+/* =========================================================
+   PDF TABLE
+
+   الصفوف تتساوى تلقائياً
+   ========================================================= */
+
+#pdfInvoice .items-table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  table-layout:fixed;
+
+}
+
+
+/* لا يوجد ارتفاع ثابت للصف */
+
+#pdfInvoice .items-table tr{
+
+  height:auto;
+
+}
+
+
+/* جميع الخلايا */
+
+#pdfInvoice .items-table th,
+#pdfInvoice .items-table td{
+
+  height:auto;
+
+  min-height:14mm;
+
+  vertical-align:middle;
+
+}
+
+
+/* =========================================================
+   PDF DESCRIPTION HEADER
+   ========================================================= */
+
+#pdfInvoice .items-right .items-table th{
+
+  height:14mm;
+
+  font-size:11px;
+
+  text-align:right;
+
+  padding-right:4mm;
+
+  white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   PDF DESCRIPTION
+   ========================================================= */
+
+#pdfInvoice .items-right .items-table td{
+
+  font-size:11px;
+
+  line-height:1.5;
+
+  text-align:right;
+
+  vertical-align:middle;
+
+  white-space:normal;
+
+  overflow-wrap:anywhere;
+
+  word-break:break-word;
+
+  padding-top:2.5mm;
+
+  padding-bottom:2.5mm;
+
+  padding-right:4mm;
+
+  padding-left:4mm;
+
+}
+
+
+/* =========================================================
+   PDF NUMBER HEADER
+   ========================================================= */
+
+#pdfInvoice .left-table th{
+
+  height:14mm;
+
+  font-size:11px;
+
+  text-align:center;
+
+  white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   PDF NUMBER CELLS
+   ========================================================= */
+
+#pdfInvoice .left-table td{
+
+  height:auto;
+
+  min-height:14mm;
+
+  font-size:11px;
+
+  text-align:center;
+
+  vertical-align:middle;
+
+  white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   PDF QUANTITY
+   ========================================================= */
+
+#pdfInvoice .left-table th:nth-child(1),
+#pdfInvoice .left-table td:nth-child(1){
+
+  width:20%;
+
+  padding-left:4mm;
+
+  padding-right:4mm;
+
+}
+
+
+/* =========================================================
+   PDF PRICE
+   ========================================================= */
+
+#pdfInvoice .left-table th:nth-child(2),
+#pdfInvoice .left-table td:nth-child(2){
+
+  width:40%;
+
+  padding-left:8mm;
+
+  padding-right:8mm;
+
+}
+
+
+/* =========================================================
+   PDF AMOUNT
+   ========================================================= */
+
+#pdfInvoice .left-table th:nth-child(3),
+#pdfInvoice .left-table td:nth-child(3){
+
+  width:40%;
+
+  padding-left:8mm;
+
+  padding-right:8mm;
+
+}
+
+
+/* =========================================================
+   PDF TOTAL
+   ========================================================= */
+
+#pdfInvoice .total-bar{
+
+  width:50%;
+
+  min-height:20mm;
+
+  font-size:13px;
+
+  padding:0 6mm;
+
+  border-radius:0 0 10mm 10mm;
+
+  margin-right:auto;
+
+  margin-left:0;
+}
+
+
+/* =========================================================
+   PDF BOTTOM
+   ========================================================= */
+
+#pdfInvoice .bottom-area{
+
+  position:absolute;
+
+  left:11.5mm;
+
+  right:11.5mm;
+
+  bottom:12mm;
+
+  margin-top:0;
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10mm;
+
+  direction:ltr;
+}
+
+
+#pdfInvoice .payment-box{
+
+  border-radius:7mm 0 0 7mm;
+}
+
+
+#pdfInvoice .payment-content{
+
+  padding:5mm 6mm 4mm;
+
+  min-height:30mm;
+}
+
+
+#pdfInvoice .payment-content h3{
+
+  margin-bottom:2mm;
+
+  font-size:11px;
+}
+
+
+#pdfInvoice .payment-content p{
+
+  margin:1mm 0;
+
+  font-size:10px;
+
+  line-height:1.4;
+}
+
+
+#pdfInvoice .payment-phone{
+
+  padding:3mm 5mm;
+
+  font-size:10px;
+}
+
+
+#pdfInvoice .thank-you{
+
+  font-size:11px;
+
+  padding-bottom:4mm;
+}
+
+
+
+/* =========================================================
+   A4 PDF GUARANTEE
+   ========================================================= */
+
+@page{
+  size:A4 portrait;
+  margin:0;
+}
+
+#pdfArea{
+  box-sizing:border-box;
+  width:210mm;
+  height:297mm;
+}
+
+#pdfInvoice{
+  box-sizing:border-box;
+  width:210mm;
+  height:297mm;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:900px){
+
+  .app{
+    padding:12px;
+  }
+
+  .invoice{
+    padding:35px 25px;
+  }
+
+  .invoice-header{
+    grid-template-columns:1fr;
+    gap:30px;
+  }
+
+  .brand{
+    text-align:right;
+  }
+
+  .invoice-heading{
+    text-align:right;
+  }
+
+  .bottom-area{
+    grid-template-columns:1fr;
+    margin-top:120px;
+  }
+
+  .total-bar{
+    width:100%;
+  }
+
+  .items-shell{
+    grid-template-columns:1fr;
+  }
+
+  .items-left{
+    grid-column:1;
+    grid-row:2;
+  }
+
+  .items-right{
+    grid-column:1;
+    grid-row:1;
+  }
+
+  .meta-row{
+    grid-template-columns:1fr;
+  }
+
+  .meta-box.date.first,
+  .meta-box.date.last{
+    border-radius:0;
+  }
+
+  .product-row{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .product-row .p-description{
+    grid-column:1/-1;
+  }
+
+}
+
+
+@media(max-width:650px){
+
+  .controls-grid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .brand-name{
+    font-size:38px;
+  }
+
+  .brand-subtitle{
+    font-size:16px;
+  }
+
+  .invoice-heading h1{
+    font-size:34px;
+  }
+
+  .items-table th,
+  .items-table td{
+    font-size:12px;
+  }
+
+  .meta-label{
+    font-size:13px;
+  }
+
+  .meta-value{
+    font-size:14px;
+  }
+
+  .total-bar{
+    font-size:15px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<!-- =========================================================
+     FORM
+     ========================================================= -->
+
+<section class="controls">
+
+  <h1>
+    إنشاء فاتورة
+  </h1>
+
+
+  <div class="controls-grid">
+
+
+    <div class="field">
+
+      <label>
+        رقم الفاتورة
+      </label>
+
+      <input
+        id="invoiceNumber"
+        value="#A000001"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        تاريخ الفاتورة
+      </label>
+
+      <input
+        id="invoiceDate"
+        type="date"
+        value="2023-03-07"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        تاريخ الاستحقاق
+      </label>
+
+      <input
+        id="dueDate"
+        type="date"
+        value="2023-03-07"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        اسم العميل / الشركة
+      </label>
+
+      <input
+        id="customerName"
+        value="اسم الشركة"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        عنوان العميل
+      </label>
+
+      <input
+        id="customerAddress"
+        value="عنوان الشركة"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        مدينة / دولة العميل
+      </label>
+
+      <input
+        id="customerCity"
+        value="المدينة، الدولة - 00000"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        رقم جوال العميل
+      </label>
+
+      <input
+        id="customerPhone"
+        value="+0 (000) 123-4567"
+        dir="ltr"
+        inputmode="tel"
+      >
+
+    </div>
+
+
+    <!-- BANK DETAILS -->
+
+    <textarea id="paymentDetails" hidden>ABCD BANK
+رمز SWIFT: ABCDUSBBXXX
+رقم الحساب: #37474892300011</textarea>
+
+  </div>
+
+
+  <!-- =======================================================
+       PRODUCTS
+       ======================================================= -->
+
+  <div class="products-editor">
+
+
+    <div class="products-editor-head">
+
+      <h2>
+        المنتجات
+      </h2>
+
+
+      <button
+        class="btn btn-add"
+        type="button"
+        onclick="addProduct()"
+      >
+        + إضافة منتج
+      </button>
+
+    </div>
+
+
+    <div id="productEditor"></div>
+
+  </div>
+
+
+  <!-- =======================================================
+       ACTIONS
+       ======================================================= -->
+
+  <div class="actions">
+
+    <button
+      class="btn btn-update"
+      type="button"
+      onclick="updateInvoice()"
+    >
+      تحديث الفاتورة
+    </button>
+
+
+    <button
+      class="btn btn-pdf"
+      id="savePdfButton"
+      type="button"
+      onclick="savePDF()"
+    >
+      حفظ PDF
+    </button>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SCREEN INVOICE
+     ========================================================= -->
+
+<div class="invoice-wrap">
+
+<main
+  class="invoice"
+  id="invoice"
+>
+
+
+<!-- HEADER -->
+
+<header class="invoice-header">
+
+
+  <div class="brand">
+
+    <h2 class="brand-name">
+      مركز الإخلاص
+    </h2>
+
+    <p class="brand-subtitle">
+      لصيانة السيارات وتصليح الشاحنات
+    </p>
+
+    <div class="brand-address">
+
+      <div>
+        طريق محافظة الحناكية، النخيل،
+      </div>
+
+      <div>
+        المملكة العربية السعودية
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="invoice-heading">
+
+    <h1>
+      الفاتورة
+    </h1>
+
+
+    <div class="bill-to">
+
+      <div class="label">
+        الفاتورة إلى
+      </div>
+
+
+      <div
+        class="customer-name"
+        id="outCustomerName"
+      >
+        اسم الشركة
+      </div>
+
+
+      <div
+        class="customer-line"
+        id="outCustomerAddress"
+      >
+        عنوان الشركة
+      </div>
+
+
+      <div
+        class="customer-line"
+        id="outCustomerCity"
+      >
+        المدينة، الدولة - 00000
+      </div>
+
+
+      <div
+        class="customer-line phone-ltr"
+        id="outCustomerPhone"
+      >
+        +0 (000) 123-4567
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+
+<!-- META -->
+
+<section class="meta-row">
+
+
+  <div class="meta-box invoice-no">
+
+    <div class="meta-label">
+      رقم الفاتورة
+    </div>
+
+    <div
+      class="meta-value"
+      id="outInvoiceNumber"
+    >
+      #A000001
+    </div>
+
+  </div>
+
+
+  <div class="meta-box date first">
+
+    <div class="meta-label">
+      تاريخ الفاتورة
+    </div>
+
+    <div
+      class="meta-value"
+      id="outInvoiceDate"
+    >
+      15 شعبان 2023
+    </div>
+
+  </div>
+
+
+  <div class="meta-box date last">
+
+    <div class="meta-label">
+      تاريخ الاستحقاق
+    </div>
+
+    <div
+      class="meta-value"
+      id="outDueDate"
+    >
+      15 شعبان 2023
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- PRODUCTS -->
+
+<section class="items-shell">
+
+
+  <!-- LEFT -->
+
+  <div class="items-left">
+
+    <table class="items-table left-table">
+
+      <thead>
+
+        <tr>
+
+          <th>
+            الكمية
+          </th>
+
+          <th>
+            السعر بالريال
+          </th>
+
+          <th>
+            المبلغ بالريال
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody
+        id="outLeftItems"
+      ></tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- RIGHT -->
+
+  <div class="items-right">
+
+    <table class="items-table">
+
+      <thead>
+
+        <tr>
+
+          <th>
+            وصف المنتج
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody
+        id="outRightItems"
+      ></tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+
+<!-- TOTAL -->
+
+<div class="total-bar">
+
+  <span>
+    إجمالي المبلغ المستحق
+  </span>
+
+  <span
+    class="amount"
+    id="outTotal"
+  >
+    ﷼ 4,950.00
+  </span>
+
+</div>
+
+
+
+<!-- PAYMENT -->
+
+<section class="bottom-area">
+
+
+  <div class="payment-box">
+
+    <div class="payment-content">
+
+      <h3>
+        تفاصيل الدفع
+      </h3>
+
+      <div id="outPayment"></div>
+
+    </div>
+
+
+    <div class="payment-phone phone-ltr">
+
+      رقم الهاتف
+      &nbsp; | &nbsp;
+      +966 50 758 2482
+
+    </div>
+
+  </div>
+
+
+  <div class="thank-you">
+
+    شكرًا لتعاملكم معنا!
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+</div>
+
+
+
+<!-- =========================================================
+     PDF A4 VERSION
+     ========================================================= -->
+
+<div id="pdfArea">
+
+<main id="pdfInvoice">
+
+
+<!-- PDF HEADER -->
+
+<header class="invoice-header">
+
+
+  <div class="brand">
+
+    <h2 class="brand-name">
+      مركز الإخلاص
+    </h2>
+
+    <p class="brand-subtitle">
+      لصيانة السيارات وتصليح الشاحنات
+    </p>
+
+    <div class="brand-address">
+
+      <div>
+        طريق محافظة الحناكية، النخيل،
+      </div>
+
+      <div>
+        المملكة العربية السعودية
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="invoice-heading">
+
+    <h1>
+      الفاتورة
+    </h1>
+
+
+    <div class="bill-to">
+
+      <div class="label">
+        الفاتورة إلى
+      </div>
+
+
+      <div
+        class="customer-name"
+        id="pdfCustomerName"
+      ></div>
+
+
+      <div
+        class="customer-line"
+        id="pdfCustomerAddress"
+      ></div>
+
+
+      <div
+        class="customer-line"
+        id="pdfCustomerCity"
+      ></div>
+
+
+      <div
+        class="customer-line phone-ltr"
+        id="pdfCustomerPhone"
+      ></div>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+
+<!-- PDF META -->
+
+<section class="meta-row">
+
+
+  <div class="meta-box invoice-no">
+
+    <div class="meta-label">
+      رقم الفاتورة
+    </div>
+
+    <div
+      class="meta-value"
+      id="pdfInvoiceNumber"
+    ></div>
+
+  </div>
+
+
+  <div class="meta-box date first">
+
+    <div class="meta-label">
+      تاريخ الفاتورة
+    </div>
+
+    <div
+      class="meta-value"
+      id="pdfInvoiceDate"
+    ></div>
+
+  </div>
+
+
+  <div class="meta-box date last">
+
+    <div class="meta-label">
+      تاريخ الاستحقاق
+    </div>
+
+    <div
+      class="meta-value"
+      id="pdfDueDate"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<!-- PDF PRODUCTS -->
+
+<section class="items-shell">
+
+
+  <div class="items-left">
+
+    <table class="items-table left-table">
+
+      <thead>
+
+        <tr>
+
+          <th>
+            الكمية
+          </th>
+
+          <th>
+            السعر بالريال
+          </th>
+
+          <th>
+            المبلغ بالريال
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody
+        id="pdfLeftItems"
+      ></tbody>
+
+    </table>
+
+  </div>
+
+
+  <div class="items-right">
+
+    <table class="items-table">
+
+      <thead>
+
+        <tr>
+
+          <th>
+            وصف المنتج
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody
+        id="pdfRightItems"
+      ></tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+
+<!-- PDF TOTAL -->
+
+<div class="total-bar">
+
+  <span>
+    إجمالي المبلغ المستحق
+  </span>
+
+  <span
+    class="amount"
+    id="pdfTotal"
+  ></span>
+
+</div>
+
+
+
+<!-- PDF PAYMENT -->
+
+<section class="bottom-area">
+
+
+  <div class="payment-box">
+
+    <div class="payment-content">
+
+      <h3>
+        تفاصيل الدفع
+      </h3>
+
+      <div id="pdfPayment"></div>
+
+    </div>
+
+
+    <div class="payment-phone phone-ltr">
+
+      رقم الهاتف
+      &nbsp; | &nbsp;
+      +966 50 758 2482
+
+    </div>
+
+  </div>
+
+
+  <div class="thank-you">
+
+    شكرًا لتعاملكم معنا!
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   PRODUCTS ARRAY
+   ========================================================= */
+
+const products = [];
+
+
+/* =========================================================
+   ADD PRODUCT
+   ========================================================= */
+
+function addProduct(
+  description = "وصف المنتج",
+  qty = 1,
+  price = 0
+){
+
+  products.push({
+
+    id:
+      Date.now() +
+      Math.random(),
+
+    description,
+
+    qty,
+
+    price
+
+  });
+
+
+  renderEditor();
+
+  updateInvoice(false);
+
+}
+
+
+/* =========================================================
+   REMOVE PRODUCT
+   ========================================================= */
+
+function removeProduct(id){
+
+  const index =
+    products.findIndex(
+      p => p.id === id
+    );
+
+
+  if(index !== -1){
+
+    products.splice(
+      index,
+      1
+    );
+
+
+    renderEditor();
+
+    updateInvoice();
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER PRODUCT FORM
+   ========================================================= */
+
+function renderEditor(){
+
+  const editor =
+    document.getElementById(
+      "productEditor"
+    );
+
+
+  editor.innerHTML =
+    products.map(
+      product => `
+
+        <div
+          class="product-row"
+          data-id="${product.id}"
+        >
+
+          <input
+            class="p-description"
+            value="${escapeAttr(
+              product.description
+            )}"
+            placeholder="وصف المنتج"
+            oninput="editProduct(
+              ${product.id},
+              'description',
+              this.value
+            )"
+          >
+
+
+          <input
+            class="p-qty"
+            type="number"
+            min="1"
+            value="${product.qty}"
+            oninput="editProduct(
+              ${product.id},
+              'qty',
+              this.value
+            )"
+          >
+
+
+          <input
+            class="p-price"
+            type="text"
+            inputmode="decimal"
+            dir="ltr"
+            value="${product.price}"
+            oninput="editProduct(
+              ${product.id},
+              'price',
+              this.value
+            )"
+          >
+
+
+          <input
+            value="${money(
+              product.qty *
+              product.price
+            )}"
+            readonly
+            aria-label="المبلغ"
+          >
+
+
+          <button
+            class="remove"
+            type="button"
+            onclick="removeProduct(
+              ${product.id}
+            )"
+          >
+            حذف
+          </button>
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+/* =========================================================
+   EDIT PRODUCT
+   ========================================================= */
+
+function editProduct(
+  id,
+  key,
+  value
+){
+
+  const product =
+    products.find(
+      p => p.id === id
+    );
+
+
+  if(!product){
+    return;
+  }
+
+
+  if(
+    key === "qty" ||
+    key === "price"
+  ){
+
+    const normalized =
+      String(value)
+        .replace(/,/g,"")
+        .replace(/٫/g,".")
+        .replace(/٬/g,"");
+
+
+    product[key] =
+      Number(normalized) || 0;
+
+  }else{
+
+    product[key] = value;
+
+  }
+
+
+  updateInvoice(false);
+
+}
+
+
+/* =========================================================
+   SYNC PRODUCT ROW HEIGHTS
+   Keep each description row aligned with its matching
+   quantity / price / amount row across the separate tables.
+   ========================================================= */
+
+function syncProductRowHeights(leftBodyId, rightBodyId){
+
+  const leftBody = document.getElementById(leftBodyId);
+  const rightBody = document.getElementById(rightBodyId);
+
+  if(!leftBody || !rightBody) return;
+
+  const leftRows = Array.from(leftBody.querySelectorAll("tr"));
+  const rightRows = Array.from(rightBody.querySelectorAll("tr"));
+  const count = Math.min(leftRows.length, rightRows.length);
+
+  // Clear previous explicit heights before measuring current content.
+  leftRows.forEach(row => row.style.height = "auto");
+  rightRows.forEach(row => row.style.height = "auto");
+
+  for(let i = 0; i < count; i++){
+    const leftHeight = leftRows[i].getBoundingClientRect().height;
+    const rightHeight = rightRows[i].getBoundingClientRect().height;
+    const rowHeight = Math.max(leftHeight, rightHeight);
+
+    leftRows[i].style.height = rowHeight + "px";
+    rightRows[i].style.height = rowHeight + "px";
+  }
+}
+
+function syncScreenProductRows(){
+  syncProductRowHeights("outLeftItems", "outRightItems");
+}
+
+function syncPdfProductRows(){
+  syncProductRowHeights("pdfLeftItems", "pdfRightItems");
+}
+
+/* =========================================================
+   UPDATE SCREEN INVOICE
+   ========================================================= */
+
+function updateInvoice(
+  shouldRender = false
+){
+
+  document.getElementById(
+    "outInvoiceNumber"
+  ).textContent =
+    value("invoiceNumber");
+
+
+  document.getElementById(
+    "outInvoiceDate"
+  ).textContent =
+    formatArabicDate(
+      value("invoiceDate")
+    );
+
+
+  document.getElementById(
+    "outDueDate"
+  ).textContent =
+    formatArabicDate(
+      value("dueDate")
+    );
+
+
+  document.getElementById(
+    "outCustomerName"
+  ).textContent =
+    value("customerName") ||
+    "اسم الشركة";
+
+
+  document.getElementById(
+    "outCustomerAddress"
+  ).textContent =
+    value("customerAddress");
+
+
+  document.getElementById(
+    "outCustomerCity"
+  ).textContent =
+    value("customerCity");
+
+
+  document.getElementById(
+    "outCustomerPhone"
+  ).textContent =
+    value("customerPhone");
+
+
+  const right =
+    document.getElementById(
+      "outRightItems"
+    );
+
+
+  const left =
+    document.getElementById(
+      "outLeftItems"
+    );
+
+
+  right.innerHTML = "";
+
+  left.innerHTML = "";
+
+
+  let total = 0;
+
+
+  products.forEach(
+    product => {
+
+
+      const amount =
+        product.qty *
+        product.price;
+
+
+      total += amount;
+
+
+      /* DESCRIPTION ROW */
+
+      const rightRow =
+        document.createElement(
+          "tr"
+        );
+
+
+      rightRow.innerHTML = `
+
+        <td>
+
+          <div
+            style="
+              font-weight:500;
+              white-space:normal;
+              overflow-wrap:anywhere;
+              word-break:break-word;
+              line-height:1.55;
+            "
+          >
+
+            ${escapeHtml(
+              product.description ||
+              product.name ||
+              ""
+            )}
+
+          </div>
+
+        </td>
+
+      `;
+
+
+      /* ===================================================
+         NUMBERS ROW
+
+         نفس عدد الصفوف بالضبط.
+         CSS Table يجعل ارتفاعه مطابقاً
+         لارتفاع صف الوصف.
+         =================================================== */
+
+      const leftRow =
+        document.createElement(
+          "tr"
+        );
+
+
+      leftRow.innerHTML = `
+
+        <td>
+
+          ${String(
+            product.qty
+          ).padStart(2,"0")}
+
+        </td>
+
+
+        <td class="currency">
+
+          ${money(
+            product.price
+          )}
+
+        </td>
+
+
+        <td class="currency">
+
+          ${money(
+            amount
+          )}
+
+        </td>
+
+      `;
+
+
+      right.appendChild(
+        rightRow
+      );
+
+
+      left.appendChild(
+        leftRow
+      );
+
+    }
+  );
+
+  // Match row heights after both separate tables have been populated.
+  syncScreenProductRows();
+
+  document.getElementById(
+    "outTotal"
+  ).textContent =
+    "﷼ " +
+    money(total);
+
+
+  document.getElementById(
+    "outPayment"
+  ).innerHTML =
+    nl2br(
+      document.getElementById(
+        "paymentDetails"
+      ).value
+    );
+
+
+  if(shouldRender){
+
+    renderEditor();
+
+  }
+
+}
+
+
+/* =========================================================
+   PREPARE PDF
+   ========================================================= */
+
+function preparePDFInvoice(){
+
+  document.getElementById(
+    "pdfInvoiceNumber"
+  ).textContent =
+    value("invoiceNumber");
+
+
+  document.getElementById(
+    "pdfInvoiceDate"
+  ).textContent =
+    formatArabicDate(
+      value("invoiceDate")
+    );
+
+
+  document.getElementById(
+    "pdfDueDate"
+  ).textContent =
+    formatArabicDate(
+      value("dueDate")
+    );
+
+
+  document.getElementById(
+    "pdfCustomerName"
+  ).textContent =
+    value("customerName") ||
+    "اسم الشركة";
+
+
+  document.getElementById(
+    "pdfCustomerAddress"
+  ).textContent =
+    value("customerAddress");
+
+
+  document.getElementById(
+    "pdfCustomerCity"
+  ).textContent =
+    value("customerCity");
+
+
+  document.getElementById(
+    "pdfCustomerPhone"
+  ).textContent =
+    value("customerPhone");
+
+
+  const right =
+    document.getElementById(
+      "pdfRightItems"
+    );
+
+
+  const left =
+    document.getElementById(
+      "pdfLeftItems"
+    );
+
+
+  right.innerHTML = "";
+
+  left.innerHTML = "";
+
+
+  let total = 0;
+
+
+  products.forEach(
+    product => {
+
+
+      const amount =
+        product.qty *
+        product.price;
+
+
+      total += amount;
+
+
+      /* DESCRIPTION */
+
+      const rightRow =
+        document.createElement(
+          "tr"
+        );
+
+
+      rightRow.innerHTML = `
+
+        <td>
+
+          <div
+            style="
+              font-weight:500;
+              white-space:normal;
+              overflow-wrap:anywhere;
+              word-break:break-word;
+              line-height:1.5;
+            "
+          >
+
+            ${escapeHtml(
+              product.description ||
+              product.name ||
+              ""
+            )}
+
+          </div>
+
+        </td>
+
+      `;
+
+
+      /* NUMBERS */
+
+      const leftRow =
+        document.createElement(
+          "tr"
+        );
+
+
+      leftRow.innerHTML = `
+
+        <td>
+
+          ${String(
+            product.qty
+          ).padStart(2,"0")}
+
+        </td>
+
+
+        <td class="currency">
+
+          ${money(
+            product.price
+          )}
+
+        </td>
+
+
+        <td class="currency">
+
+          ${money(
+            amount
+          )}
+
+        </td>
+
+      `;
+
+
+      right.appendChild(
+        rightRow
+      );
+
+
+      left.appendChild(
+        leftRow
+      );
+
+    }
+  );
+
+  // Keep the PDF description and number columns aligned as well.
+  syncPdfProductRows();
+
+  document.getElementById(
+    "pdfTotal"
+  ).textContent =
+    "﷼ " +
+    money(total);
+
+
+  document.getElementById(
+    "pdfPayment"
+  ).innerHTML =
+    nl2br(
+      document.getElementById(
+        "paymentDetails"
+      ).value
+    );
+
+}
+
+
+/* =========================================================
+   SAVE DIRECT A4 PDF
+   ========================================================= */
+
+async function savePDF(){
+
+  const button =
+    document.getElementById("savePdfButton");
+
+  try{
+
+    button.disabled = true;
+    button.textContent = "جاري إنشاء PDF...";
+
+    /* =====================================================
+       IMPORTANT:
+       Export the exact invoice shown in the browser.
+       We do NOT use #pdfInvoice anymore because its separate
+       CSS/layout can differ from the screen invoice.
+       ===================================================== */
+
+    updateInvoice(false);
+
+    const invoiceElement =
+      document.getElementById("invoice");
+
+    if(!invoiceElement){
+      throw new Error("Invoice element not found.");
+    }
+
+    /* WAIT FOR FONTS */
+    if(document.fonts){
+      await document.fonts.ready;
+    }
+
+    await new Promise(
+      resolve => setTimeout(resolve, 250)
+    );
+
+    /* =====================================================
+       CAPTURE BROWSER LAYOUT
+       ===================================================== */
+
+    const canvas =
+      await html2canvas(
+        invoiceElement,
+        {
+          scale:2,
+          useCORS:true,
+          allowTaint:true,
+          backgroundColor:"#ffffff",
+          logging:false,
+
+          /*
+            Render at the invoice's desktop canvas width regardless of
+            the phone's viewport. This prevents mobile responsive rules
+            from shrinking or clipping the A4 PDF capture.
+          */
+          windowWidth:1190,
+          windowHeight:1800,
+          scrollX:0,
+          scrollY:0,
+
+          /*
+            Stabilize the cloned layout during PDF capture.
+            This prevents responsive viewport rules, shadows, and
+            tight Arabic letter spacing from clipping the logo/header.
+          */
+          onclone:(clonedDocument)=>{
+            const clonedInvoice =
+              clonedDocument.getElementById("invoice");
+
+            clonedDocument.documentElement.style.width = "1190px";
+            clonedDocument.body.style.width = "1190px";
+            clonedDocument.body.style.minWidth = "1190px";
+            clonedDocument.body.style.margin = "0";
+
+            if(clonedInvoice){
+              clonedInvoice.style.width = "1190px";
+              clonedInvoice.style.maxWidth = "none";
+              clonedInvoice.style.minWidth = "1190px";
+              clonedInvoice.style.margin = "0";
+              clonedInvoice.style.boxShadow = "none";
+              clonedInvoice.style.overflow = "visible";
+              clonedInvoice.style.background = "#ffffff";
+            }
+
+            const clonedBrand =
+              clonedDocument.querySelector("#invoice .brand-name");
+
+            if(clonedBrand){
+              clonedBrand.style.letterSpacing = "normal";
+              clonedBrand.style.lineHeight = "1.25";
+              clonedBrand.style.paddingTop = "3px";
+              clonedBrand.style.paddingBottom = "3px";
+              clonedBrand.style.overflow = "visible";
+            }
+
+            const clonedSubtitle =
+              clonedDocument.querySelector("#invoice .brand-subtitle");
+
+            if(clonedSubtitle){
+              clonedSubtitle.style.lineHeight = "1.5";
+              clonedSubtitle.style.overflow = "visible";
+            }
+          }
+        }
+      );
+
+    /* =====================================================
+       CREATE A4 PDF
+       ===================================================== */
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf =
+      new jsPDF({
+        orientation:"portrait",
+        unit:"mm",
+        format:[210,297],
+        compress:true
+      });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    /*
+      Fit the captured browser invoice proportionally
+      inside A4. This prevents stretching/mixing the layout.
+    */
+
+    const imageRatio =
+      canvas.width / canvas.height;
+
+    const pageRatio =
+      pageWidth / pageHeight;
+
+    let imageWidth;
+    let imageHeight;
+
+    if(imageRatio > pageRatio){
+
+      imageWidth = pageWidth;
+      imageHeight =
+        pageWidth / imageRatio;
+
+    }else{
+
+      imageHeight = pageHeight;
+      imageWidth =
+        pageHeight * imageRatio;
+
+    }
+
+    const offsetX =
+      (pageWidth - imageWidth) / 2;
+
+    const offsetY =
+      (pageHeight - imageHeight) / 2;
+
+    pdf.addImage(
+      canvas.toDataURL("image/jpeg",0.96),
+      "JPEG",
+      offsetX,
+      offsetY,
+      imageWidth,
+      imageHeight,
+      undefined,
+      "FAST"
+    );
+
+    /* =====================================================
+       FILE NAME
+       ===================================================== */
+
+    let fileName =
+      value("invoiceNumber") ||
+      "Invoice";
+
+    fileName =
+      fileName
+        .replace(/^#+/,"")
+        .replace(/[\\/:*?"<>|]/g,"-");
+
+    pdf.save(
+      "Invoice-" +
+      fileName +
+      ".pdf"
+    );
+
+  }catch(error){
+
+    console.error(
+      "PDF Error:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء إنشاء ملف PDF. حاول مرة أخرى."
+    );
+
+  }finally{
+
+    button.disabled = false;
+    button.textContent = "حفظ PDF";
+
+  }
+
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+function formatArabicDate(
+  dateValue
+){
+
+  if(!dateValue){
+
+    return "—";
+
+  }
+
+
+  const date =
+    new Date(
+      dateValue +
+      "T00:00:00"
+    );
+
+
+  return new Intl.DateTimeFormat(
+    "ar-SA",
+    {
+
+      day:"numeric",
+
+      month:"long",
+
+      year:"numeric"
+
+    }
+  ).format(date);
+
+}
+
+
+/* =========================================================
+   VALUE
+   ========================================================= */
+
+function value(id){
+
+  return document
+    .getElementById(id)
+    .value
+    .trim();
+
+}
+
+
+/* =========================================================
+   MONEY
+   ========================================================= */
+
+function money(number){
+
+  return Number(number)
+    .toLocaleString(
+      "en-US",
+      {
+
+        minimumFractionDigits:2,
+
+        maximumFractionDigits:2
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   NEW LINES
+   ========================================================= */
+
+function nl2br(text){
+
+  return escapeHtml(text)
+
+    .replace(
+      /\n/g,
+      "<br>"
+    )
+
+    .split("<br>")
+
+    .map(
+      line =>
+        `<p>${line}</p>`
+    )
+
+    .join("");
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(text){
+
+  return String(text)
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function escapeAttr(text){
+
+  return escapeHtml(text);
+
+}
+
+
+// Recalculate alignment when the invoice width changes.
+window.addEventListener("resize", () => {
+  syncScreenProductRows();
+  syncPdfProductRows();
+});
+
+/* =========================================================
+   DEFAULT PRODUCTS
+   ========================================================= */
+
+addProduct(
+  "وصف المنتج",
+  1,
+  3000
+);
+
+
+addProduct(
+  "وصف المنتج",
+  1,
+  1500
+);
+
+
+/* =========================================================
+   INITIAL UPDATE
+   ========================================================= */
+
+updateInvoice(true);
+
+</script>
+
+
+</body>
+</html>
+```
